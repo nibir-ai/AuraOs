@@ -2,7 +2,7 @@
 # build-iso.sh — AuraOS ISO Generation Script
 #
 # Bootstraps an Ubuntu 26.04 LTS (Resolute Raccoon) chroot, injects custom configurations,
-# compiled AuraOS Debian packages, and outputs a bootable hybrid ISO image.
+# compiled AuraOS Debian packages, custom installer, and outputs a bootable hybrid ISO image.
 #
 # Copyright (C) 2025 AuraOS Contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -96,19 +96,20 @@ apt-get install -y --no-install-recommends \
     google-drive-ocamlfuse \
     evolution-data-server \
     fuse3 \
-    calamares \
-    calamares-settings-ubuntu
+    libadwaita-1-0 \
+    fastfetch
 
 # Enable systemd services
 systemctl enable gdm3
 systemctl enable NetworkManager
 systemctl enable systemd-resolved
 
-# Configure GDM automatic login / autostart
+# Configure GDM automatic login for live ISO
 mkdir -p /etc/gdm3
 cat <<GDM > /etc/gdm3/custom.conf
 [daemon]
-AutomaticLoginEnable=false
+AutomaticLoginEnable=true
+AutomaticLogin=live
 GDM
 
 # Clean cache to reduce SquashFS size
@@ -165,17 +166,74 @@ EOF
 # Compile GNOME settings schemas inside chroot
 chroot "${ROOT_DIR}" glib-compile-schemas /usr/share/glib-2.0/schemas
 
-# 8. Create SquashFS filesystem
+# 8. Copy Custom fastfetch configuration and ASCII logo
+echo "Configuring fastfetch..."
+mkdir -p "${ROOT_DIR}/etc/fastfetch"
+mkdir -p "${ROOT_DIR}/etc/auraos"
+cp ../config/fastfetch/config.jsonc "${ROOT_DIR}/etc/fastfetch/config.jsonc"
+cp ../config/fastfetch/ascii_logo.txt "${ROOT_DIR}/etc/auraos/ascii_logo.txt"
+
+# Override /etc/os-release and /usr/lib/os-release to brand OS as AuraOS
+cat <<OSRELEASE > "${ROOT_DIR}/etc/os-release"
+NAME="AuraOS"
+VERSION="26.04 LTS (Resolute Raccoon)"
+ID=auraos
+ID_LIKE=ubuntu
+PRETTY_NAME="AuraOS 26.04 LTS"
+VERSION_ID="26.04"
+HOME_URL="https://github.com/nibir-ai/AuraOs"
+SUPPORT_URL="https://github.com/nibir-ai/AuraOs/issues"
+BUG_REPORT_URL="https://github.com/nibir-ai/AuraOs/issues"
+PRIVACY_POLICY_URL="https://github.com/nibir-ai/AuraOs"
+VERSION_CODENAME=resolute
+UBUNTU_CODENAME=resolute
+OSRELEASE
+
+cp "${ROOT_DIR}/etc/os-release" "${ROOT_DIR}/usr/lib/os-release"
+
+# 9. Inject Custom Installer
+echo "Injecting custom installer..."
+# Copy the compiled aura-installer binary to the chroot
+cp ../build/aura-installer "${ROOT_DIR}/usr/bin/aura-installer" || echo "Warning: aura-installer binary not found in ../build/. Ensure it is compiled first."
+
+# Configure live session user autostart for the custom installer
+mkdir -p "${ROOT_DIR}/etc/xdg/autostart"
+cat <<AUTOSTART > "${ROOT_DIR}/etc/xdg/autostart/aura-installer.desktop"
+[Desktop Entry]
+Type=Application
+Name=AuraOS Installer
+Comment=Install AuraOS to your hard drive
+Exec=/usr/bin/aura-installer
+Icon=system-software-install
+Categories=System;
+OnlyShowIn=GNOME;
+Terminal=false
+AUTOSTART
+
+# Create live user configuration
+cat <<'EOF' > "${ROOT_DIR}/tmp/create-live-user.sh"
+#!/bin/bash
+if ! id "live" &>/dev/null; then
+    useradd -m -s /bin/bash -g auraos-users live || useradd -m -s /bin/bash live
+    passwd -d live
+    echo "live ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+fi
+EOF
+chmod +x "${ROOT_DIR}/tmp/create-live-user.sh"
+chroot "${ROOT_DIR}" /tmp/create-live-user.sh
+rm "${ROOT_DIR}/tmp/create-live-user.sh"
+
+# 10. Create SquashFS filesystem
 echo "Generating SquashFS image..."
 mkdir -p "${IMAGE_DIR}/live"
 mksquashfs "${ROOT_DIR}" "${IMAGE_DIR}/live/filesystem.squashfs" -noappend -comp xz
 
-# 9. Extract kernel and initramfs for booting
+# 11. Extract kernel and initramfs for booting
 echo "Extracting kernel files..."
 cp "${ROOT_DIR}/boot/vmlinuz-"* "${IMAGE_DIR}/live/vmlinuz"
 cp "${ROOT_DIR}/boot/initrd.img-"* "${IMAGE_DIR}/live/initrd"
 
-# 10. Configure isolinux/GRUB boot options (Aura kernel branding)
+# 12. Configure isolinux/GRUB boot options (Aura kernel branding)
 echo "Configuring bootloader files..."
 mkdir -p "${IMAGE_DIR}/isolinux"
 cp /usr/lib/ISOLINUX/isolinux.bin "${IMAGE_DIR}/isolinux/"
@@ -199,7 +257,7 @@ menuentry "Start AuraOS with Aura kernel (Live Session)" {
 }
 EOF
 
-# 11. Generate final bootable ISO image
+# 13. Generate final bootable ISO image
 echo "Building final bootable hybrid ISO..."
 xorriso -as mkisofs \
     -iso-level 3 \

@@ -2,7 +2,7 @@
 # Requires: Rust (cargo), Go, GCC, CMake, protoc, Node.js
 
 .PHONY: all clean pam-google aura-auth-helper aura-token-refresh aura-profile-sync \
-        gemini-daemon aura-cli aura-cloud gnome-extension proto deb iso
+        gemini-daemon aura-cli aura-installer aura-cloud gnome-extension proto deb iso
 
 # Build output directory
 BUILD_DIR := build
@@ -25,22 +25,38 @@ pam-google:
 aura-auth-helper:
 	@echo "=== Building aura-auth-helper ==="
 	cd aura-auth-helper && cargo build --release
+	mkdir -p $(BUILD_DIR)
+	cp aura-auth-helper/target/release/aura-auth-helper $(BUILD_DIR)/aura-auth-helper
 
 aura-token-refresh:
 	@echo "=== Building aura-token-refresh ==="
 	cd aura-token-refresh && cargo build --release
+	mkdir -p $(BUILD_DIR)
+	cp aura-token-refresh/target/release/aura-token-refresh $(BUILD_DIR)/aura-token-refresh
 
 aura-profile-sync:
 	@echo "=== Building aura-profile-sync ==="
 	cd aura-profile-sync && cargo build --release
+	mkdir -p $(BUILD_DIR)
+	cp aura-profile-sync/target/release/aura-profile-sync $(BUILD_DIR)/aura-profile-sync
 
 gemini-daemon:
 	@echo "=== Building gemini-daemon ==="
 	cd gemini-daemon && cargo build --release
+	mkdir -p $(BUILD_DIR)
+	cp gemini-daemon/target/release/gemini-daemon $(BUILD_DIR)/gemini-daemon
 
 aura-cli:
 	@echo "=== Building aura-cli ==="
 	cd aura-cli && cargo build --release
+	mkdir -p $(BUILD_DIR)
+	cp aura-cli/target/release/aura-cli $(BUILD_DIR)/aura-cli
+
+aura-installer:
+	@echo "=== Building aura-installer ==="
+	cd aura-installer && cargo build --release
+	mkdir -p $(BUILD_DIR)
+	cp aura-installer/target/release/aura-installer $(BUILD_DIR)/aura-installer
 
 # ─── Go Components ─────────────────────────────────────────────────
 aura-cloud: proto
@@ -53,7 +69,7 @@ gnome-extension:
 	cd gnome-shell-extension && npx tsc
 
 # ─── Aggregate Targets ─────────────────────────────────────────────
-rust-all: aura-auth-helper aura-token-refresh aura-profile-sync gemini-daemon aura-cli
+rust-all: aura-auth-helper aura-token-refresh aura-profile-sync gemini-daemon aura-cli aura-installer
 
 all: proto pam-google rust-all aura-cloud gnome-extension
 	@echo "=== All components built successfully ==="
@@ -81,6 +97,7 @@ install: all
 	install -Dm755 aura-profile-sync/target/release/aura-profile-sync $(DESTDIR)$(PREFIX)/lib/auraos/aura-profile-sync
 	install -Dm755 gemini-daemon/target/release/gemini-daemon $(DESTDIR)$(PREFIX)/libexec/gemini-daemon
 	install -Dm755 aura-cli/target/release/aura-cli $(DESTDIR)$(PREFIX)/bin/aura-cli
+	install -Dm755 aura-installer/target/release/aura-installer $(DESTDIR)$(PREFIX)/bin/aura-installer
 	# D-Bus
 	install -Dm644 dbus/com.auraos.GeminiAssistant.xml $(DESTDIR)$(PREFIX)/share/dbus-1/interfaces/com.auraos.GeminiAssistant.xml
 	install -Dm644 dbus/com.auraos.GeminiAssistant.service $(DESTDIR)$(PREFIX)/share/dbus-1/services/com.auraos.GeminiAssistant.service
@@ -112,4 +129,5 @@ clean:
 	cd aura-profile-sync && cargo clean
 	cd gemini-daemon && cargo clean
 	cd aura-cli && cargo clean
+	cd aura-installer && cargo clean
 	cd aura-cloud && go clean

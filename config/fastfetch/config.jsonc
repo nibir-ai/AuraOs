@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "source": "/etc/auraos/ascii_logo.txt",
+    "padding": {
+      "right": 4
+    }
+  },
+  "display": {
+    "size": {
+      "maxPrefix": "GB",
+      "binaryPrefix": "jedec"
+    },
+    "key": {
+      "width": 10
+    }
+  },
+  "modules": [
+    "title",
+    "separator",
+    "os",
+    "host",
+    "kernel",
+    "uptime",
+    "packages",
+    "shell",
+    "display",
+    "de",
+    "wm",
+    "terminal",
+    "cpu",
+    "gpu",
+    "memory",
+    "colors"
+  ]
+}
