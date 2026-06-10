@@ -125,7 +125,7 @@ fn build_ui(app: &Application) {
     welcome_outer.set_valign(Align::Center);
     welcome_outer.set_halign(Align::Center);
 
-    let welcome_card = gtk::BoxLayout::builder()
+    let welcome_card = gtk::Box::builder()
         .orientation(Orientation::Vertical)
         .spacing(20)
         .css_classes(vec!["glass-card"])
@@ -162,7 +162,7 @@ fn build_ui(app: &Application) {
     disk_outer.set_valign(Align::Center);
     disk_outer.set_halign(Align::Center);
 
-    let disk_card = gtk::BoxLayout::builder()
+    let disk_card = gtk::Box::builder()
         .orientation(Orientation::Vertical)
         .spacing(16)
         .css_classes(vec!["glass-card"])
@@ -188,7 +188,7 @@ fn build_ui(app: &Application) {
     let disks = get_available_disks();
     for disk in &disks {
         let row = ListBoxRow::new();
-        let row_box = gtk::BoxLayout::new(Orientation::Horizontal, 12);
+        let row_box = gtk::Box::new(Orientation::Horizontal, 12);
         row_box.set_margin_top(8);
         row_box.set_margin_bottom(8);
         row_box.set_margin_start(10);
@@ -197,7 +197,7 @@ fn build_ui(app: &Application) {
         let icon = gtk::Image::from_icon_name("drive-harddisk");
         row_box.append(&icon);
 
-        let details_box = gtk::BoxLayout::new(Orientation::Vertical, 1);
+        let details_box = gtk::Box::new(Orientation::Vertical, 1);
         let name_lbl = Label::builder()
             .label(&format!("{} ({})", disk.model, disk.size))
             .halign(Align::Start)
@@ -255,7 +255,7 @@ fn build_ui(app: &Application) {
     login_outer.set_valign(Align::Center);
     login_outer.set_halign(Align::Center);
 
-    let login_card = gtk::BoxLayout::builder()
+    let login_card = gtk::Box::builder()
         .orientation(Orientation::Vertical)
         .spacing(20)
         .css_classes(vec!["glass-card"])
@@ -319,7 +319,7 @@ fn build_ui(app: &Application) {
     progress_outer.set_valign(Align::Center);
     progress_outer.set_halign(Align::Center);
 
-    let progress_card = gtk::BoxLayout::builder()
+    let progress_card = gtk::Box::builder()
         .orientation(Orientation::Vertical)
         .spacing(24)
         .css_classes(vec!["glass-card"])
@@ -351,7 +351,7 @@ fn build_ui(app: &Application) {
     finished_outer.set_valign(Align::Center);
     finished_outer.set_halign(Align::Center);
 
-    let finished_card = gtk::BoxLayout::builder()
+    let finished_card = gtk::Box::builder()
         .orientation(Orientation::Vertical)
         .spacing(20)
         .css_classes(vec!["glass-card"])
@@ -458,7 +458,7 @@ fn build_ui(app: &Application) {
 
     // Layout assembly
     let header_bar = HeaderBar::new();
-    let content_box = gtk::BoxLayout::new(Orientation::Vertical, 0);
+    let content_box = gtk::Box::new(Orientation::Vertical, 0);
     content_box.append(&header_bar);
     content_box.append(&view_stack);
 

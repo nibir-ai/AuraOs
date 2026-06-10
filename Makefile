@@ -11,8 +11,10 @@ PREFIX := /usr
 # ─── Proto Compilation ──────────────────────────────────────────────
 proto:
 	@echo "=== Compiling protobuf definitions ==="
-	mkdir -p $(BUILD_DIR)/proto
-	protoc --go_out=$(BUILD_DIR)/proto --go-grpc_out=$(BUILD_DIR)/proto \
+	mkdir -p aura-cloud/proto/auracloudv1
+	protoc --go_out=aura-cloud --go-grpc_out=aura-cloud \
+		--go_opt=module=github.com/auraos/aura-cloud \
+		--go-grpc_opt=module=github.com/auraos/aura-cloud \
 		--proto_path=proto proto/aura_cloud.proto
 
 # ─── C Components ───────────────────────────────────────────────────
@@ -124,6 +126,7 @@ install: all
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -rf pam-google/build
+	rm -rf aura-cloud/proto/auracloudv1
 	cd aura-auth-helper && cargo clean
 	cd aura-token-refresh && cargo clean
 	cd aura-profile-sync && cargo clean

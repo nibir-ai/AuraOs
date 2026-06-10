@@ -35,6 +35,11 @@ jobs:
       with:
         go-version: '1.22'
 
+    - name: Install protobuf plugins for Go
+      run: |
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.33.0
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
+
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
       with:
@@ -65,9 +70,4 @@ jobs:
     - name: Run Go unit tests
       run: |
         cd aura-cloud
-        # Compiles the protobufs in order to test Go code
-        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.33.0
-        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
-        mkdir -p proto/auracloudv1
-        protoc --go_out=. --go-grpc_out=. proto/aura_cloud.proto
         go test ./...
