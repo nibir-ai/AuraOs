@@ -2,7 +2,7 @@ Source: pam-google
 Section: admin
 Priority: optional
 Maintainer: AuraOS Contributors <support@auraos.org>
-Build-Depends: debhelper-compat (= 13), cmake, libpam0g-dev, libcurl4-openssl-dev, libsecret-1-dev, libjson-c-dev
+Build-Depends: debhelper-compat (= 13), cmake, libpam0g-dev, libcurl4-openssl-dev, libsecret-1-dev, libjson-c-dev, libkeyutils-dev
 Standards-Version: 4.6.2
 
 Package: pam-google

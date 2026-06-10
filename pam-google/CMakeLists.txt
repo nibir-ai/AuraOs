@@ -12,6 +12,7 @@ pkg_check_modules(JSON_C REQUIRED json-c)
 
 find_library(PAM_LIBRARY pam REQUIRED)
 find_library(CURL_LIBRARY curl REQUIRED)
+find_library(KEYUTILS_LIBRARY keyutils REQUIRED)
 find_path(PAM_INCLUDE_DIR security/pam_modules.h REQUIRED)
 find_path(CURL_INCLUDE_DIR curl/curl.h REQUIRED)
 
@@ -37,6 +38,7 @@ target_link_libraries(pam_google PRIVATE
     ${CURL_LIBRARY}
     ${LIBSECRET_LIBRARIES}
     ${JSON_C_LIBRARIES}
+    ${KEYUTILS_LIBRARY}
     crypt   # for bcrypt in offline_auth
 )
 
