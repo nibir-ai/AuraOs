@@ -1,0 +1,9 @@
+{
+  "name": "gemini-assistant-extension",
+  "version": "1.0.0",
+  "description": "AuraOS GNOME Shell Extension for Gemini Assistant",
+  "private": true,
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
