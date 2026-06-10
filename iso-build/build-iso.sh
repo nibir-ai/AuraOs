@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # build-iso.sh — AuraOS ISO Generation Script
 #
-# Bootstraps an Ubuntu 24.04 LTS chroot, injects custom configurations and
+# Bootstraps an Ubuntu 26.04 LTS (Resolute Raccoon) chroot, injects custom configurations,
 # compiled AuraOS Debian packages, and outputs a bootable hybrid ISO image.
 #
 # Copyright (C) 2025 AuraOS Contributors
@@ -10,11 +10,11 @@
 set -euo pipefail
 
 # Configuration
-CODENAME="noble"
+CODENAME="resolute"
 ARCH="amd64"
 ROOT_DIR="chroot"
 IMAGE_DIR="image"
-ISO_NAME="auraos-24.04-desktop-${ARCH}.iso"
+ISO_NAME="auraos-26.04-desktop-${ARCH}.iso"
 DEB_REPO_DIR="../build"
 
 echo "=== AuraOS ISO Build System ==="
@@ -60,12 +60,12 @@ unmount_chroot() {
 trap unmount_chroot EXIT
 mount_chroot
 
-# 4. Configure chroot packages and repositories
+# 4. Configure chroot packages and repositories (Ubuntu 26.04 Resolute Raccoon)
 echo "Configuring apt repositories inside chroot..."
 cat <<EOF > "${ROOT_DIR}/etc/apt/sources.list"
-deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ resolute main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ resolute-updates main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ resolute-security main restricted universe multiverse
 EOF
 
 # Copy resolv.conf for internet access inside chroot
@@ -136,8 +136,13 @@ chmod +x "${ROOT_DIR}/tmp/install-pkgs.sh"
 chroot "${ROOT_DIR}" /tmp/install-pkgs.sh
 rm "${ROOT_DIR}/tmp/install-pkgs.sh"
 
-# 7. Configure GNOME Shell extension defaults
+# 7. Configure GNOME Shell extension and theme defaults (Dark Mode & Blue Accent & Wallpaper)
 echo "Setting GNOME default overrides..."
+
+# Copy custom wallpaper from host installer directory to target chroot
+mkdir -p "${ROOT_DIR}/usr/share/backgrounds/auraos"
+cp ../installer/branding/auraos/wallpaper.jpg "${ROOT_DIR}/usr/share/backgrounds/auraos/wallpaper.jpg"
+
 mkdir -p "${ROOT_DIR}/usr/share/glib-2.0/schemas"
 cat <<EOF > "${ROOT_DIR}/usr/share/glib-2.0/schemas/99-auraos-defaults.gschema.override"
 [org.gnome.shell]
@@ -145,7 +150,19 @@ enabled-extensions=['gemini-assistant@auraos.org', 'aura-account-switcher']
 
 [org.gnome.desktop.interface]
 enable-hot-corners=false
+color-scheme='prefer-dark'
+accent-color='blue'
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/auraos/wallpaper.jpg'
+picture-uri-dark='file:///usr/share/backgrounds/auraos/wallpaper.jpg'
+picture-options='zoom'
+
+[org.gnome.desktop.screensaver]
+picture-uri='file:///usr/share/backgrounds/auraos/wallpaper.jpg'
 EOF
+
+# Compile GNOME settings schemas inside chroot
 chroot "${ROOT_DIR}" glib-compile-schemas /usr/share/glib-2.0/schemas
 
 # 8. Create SquashFS filesystem
@@ -158,7 +175,7 @@ echo "Extracting kernel files..."
 cp "${ROOT_DIR}/boot/vmlinuz-"* "${IMAGE_DIR}/live/vmlinuz"
 cp "${ROOT_DIR}/boot/initrd.img-"* "${IMAGE_DIR}/live/initrd"
 
-# 10. Configure isolinux/GRUB boot options
+# 10. Configure isolinux/GRUB boot options (Aura kernel branding)
 echo "Configuring bootloader files..."
 mkdir -p "${IMAGE_DIR}/isolinux"
 cp /usr/lib/ISOLINUX/isolinux.bin "${IMAGE_DIR}/isolinux/"
@@ -167,15 +184,15 @@ cp /usr/lib/syslinux/modules/bios/ldlinux.c32 "${IMAGE_DIR}/isolinux/"
 cat <<EOF > "${IMAGE_DIR}/isolinux/isolinux.cfg"
 default live
 label live
-  menu label ^Start AuraOS (Live Session)
+  menu label ^Start AuraOS with Aura kernel (Live Session)
   kernel /live/vmlinuz
   append initrd=/live/initrd boot=live quiet splash ---
 EOF
 
-# Set up EFI boot configuration
+# Set up EFI boot configuration (Aura kernel branding)
 mkdir -p "${IMAGE_DIR}/boot/grub"
 cat <<EOF > "${IMAGE_DIR}/boot/grub/grub.cfg"
-menuentry "Start AuraOS 24.04 (Live Session)" {
+menuentry "Start AuraOS with Aura kernel (Live Session)" {
     set gfxpayload=keep
     linux /live/vmlinuz boot=live quiet splash ---
     initrd /live/initrd
@@ -199,4 +216,3 @@ xorriso -as mkisofs \
     "${IMAGE_DIR}"
 
 echo "ISO compilation complete! Output written to: ${ISO_NAME}"
-EOF

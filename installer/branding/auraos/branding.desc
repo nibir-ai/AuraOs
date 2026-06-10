@@ -5,10 +5,10 @@ componentName:  auraos
 strings:
     productName:         AuraOS
     shortProductName:    AuraOS
-    version:             24.04 (Noble)
-    shortVersion:        24.04
-    versionedName:       AuraOS 24.04 (Noble)
-    shortVersionedName:  AuraOS 24.04
+    version:             26.04 (Resolute Raccoon)
+    shortVersion:        26.04
+    versionedName:       AuraOS 26.04 (Resolute Raccoon)
+    shortVersionedName:  AuraOS 26.04
     bootloaderEntryName: AuraOS
     productUrl:          https://github.com/auraos/auraos
     supportUrl:          https://github.com/auraos/auraos/issues
