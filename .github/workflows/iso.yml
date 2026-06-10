@@ -28,6 +28,7 @@ jobs:
           pkg-config \
           libgtk-4-dev \
           libadwaita-1-dev \
+          libkeyutils-dev \
           debootstrap \
           squashfs-tools \
           xorriso \

@@ -53,7 +53,7 @@ fn build_ui(app: &Application) {
         r#"
         /* System window background wallpaper */
         window {
-            background-image: url('file:///usr/share/backgrounds/auraos/wallpaper.jpg');
+            background-image: url('file:///usr/share/backgrounds/auraos/wallpaper.png');
             background-size: cover;
             background-position: center;
         }

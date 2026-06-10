@@ -1,133 +1,192 @@
-# AuraOS
+<p align="center">
+  <img src="branding/banner.svg" alt="AuraOS Banner" width="100%" max-width="800px">
+</p>
 
-**A Google-Integrated Linux Distribution with Gemini Personal Assistant**
+<p align="center">
+  <a href="https://github.com/nibir-ai/AuraOs/actions"><img src="https://img.shields.io/github/actions/workflow/status/nibir-ai/AuraOs/build.yml?branch=main&style=for-the-badge&logo=github&label=Build%20%26%20Test&labelColor=1a1d26&color=4285F4" alt="Build & Test"></a>
+  <a href="https://github.com/nibir-ai/AuraOs/actions"><img src="https://img.shields.io/github/actions/workflow/status/nibir-ai/AuraOs/deploy-cloud.yml?branch=main&style=for-the-badge&logo=google-cloud&label=Cloud%20Deploy&labelColor=1a1d26&color=ea4335" alt="Cloud Deploy"></a>
+  <a href="https://github.com/nibir-ai/AuraOs/releases"><img src="https://img.shields.io/github/v/release/nibir-ai/AuraOs?style=for-the-badge&logo=google-common-lisp&label=Release&labelColor=1a1d26&color=FBBC05" alt="Releases"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/nibir-ai/AuraOs?style=for-the-badge&logo=opensourceinitiative&label=License&labelColor=1a1d26&color=34A853" alt="License"></a>
+</p>
 
-AuraOS is a purpose-built Linux distribution designed to replicate the cohesive, identity-centric experience of Android and ChromeOS on the general-purpose desktop. Your Google account is your operating system identity, and Gemini is a first-class system service.
+---
 
-## Architecture
+# 🔵 AuraOS — Google-Integrated Desktop
+
+**AuraOS** is a next-generation Linux distribution designed to bring the seamless, identity-centric experience of Android and ChromeOS to a powerful, fully-featured GNOME desktop environment. 
+
+By linking your local operating system credentials directly to your Google Identity, AuraOS bypasses traditional local authentication. The entire OS is backed by **Google Gemini** as a first-class, background system service, orchestrating tasks, files, and integrations across Gmail, Google Calendar, and Google Drive.
+
+---
+
+## 🟢 Features & Highlights
+
+*   **🌐 Unified Google Single Sign-On (SSO):** A custom PAM module (`pam-google`) that replaces standard password verification with Google OAuth credential checks.
+*   **✨ Gemini System Daemon:** A background assistant service (`gemini-daemon`) hooked directly into your session's D-Bus bus, bringing AI assistance to GNOME Shell, terminal sessions, and local applications.
+*   **🎨 Material You & Glassmorphic UI:** Modern desktop workspace featuring Dark Mode by default, dynamic system accent colors, and a customized glassmorphism setup wizard.
+*   **🔄 Account & Profile Syncing:** Automatic synchronization of your high-resolution Google avatar (`~/.face`), contact preferences, and profile locales via the Google People API.
+*   **🔒 Secured Sandbox Confinement:** AppArmor containment profiles restricting the execution environment of OAuth PKCE auth helpers and the system daemon to enforce maximum security.
+
+---
+
+## 🟡 System Architecture
+
+AuraOS is orchestrated across multiple independent layers. User interface clients communicate with the core Rust daemon via D-Bus session interfaces, which in turn tunnels requests through an encrypted gRPC proxy in Google Cloud Run to hit the Gemini API.
 
 ```
-┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌────────────┐
-│ GNOME Shell  │   │  Aura Panel  │   │  GTK4 Apps   │   │  CLI Tool  │
-│  Extension   │   │  (Indicator) │   │ (via libgem) │   │ (aura-cli) │
-└──────┬───────┘   └──────┬───────┘   └──────┬───────┘   └─────┬──────┘
-       └──────────────────┴──────────────────┴──────────────────┘
-                                   │
-                             D-Bus (Session Bus)
-                    com.auraos.GeminiAssistant interface
-                                   │
-                   ┌───────────────▼──────────────────┐
-                   │           gemini-daemon            │
-                   │  (Rust, async tokio runtime)       │
-                   │                                    │
-                   │  ┌─────────────────────────────┐  │
-                   │  │   Tool Orchestrator (MCP)    │  │
-                   │  │   Gmail │ Calendar │ Drive   │  │
-                   │  └─────────────────────────────┘  │
-                   └────────────────────────────────────┘
-                                   │
-                           TLS 1.3 / gRPC
-                                   │
-                   ┌───────────────▼──────────────────┐
-                   │        aura-cloud backend          │
-                   │    (GCP Cloud Run — holds API key) │
-                   └────────────────────────────────────┘
-                                   │
-                   ┌───────────────▼──────────────────┐
-                   │    Google Gemini API               │
-                   └───────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│                   GNOME Shell UI Layer                 │
+│  ┌───────────────────────┐   ┌──────────────────────┐  │
+│  │ GNOME Shell Extension │   │ Custom GTK4 Welcome  │  │
+│  │   (TypeScript Panel)  │   │  (Glassmorphism Card)│  │
+│  └───────────┬───────────┘   └───────────┬──────────┘  │
+└──────────────┼───────────────────────────┼─────────────┘
+               │                           │
+               └─────────────┬─────────────┘
+                             │
+                      D-Bus (Session Bus)
+              com.auraos.GeminiAssistant Interface
+                             │
+┌────────────────────────────▼───────────────────────────┐
+│                     gemini-daemon                      │
+│            (Rust, async Tokio runtime)                 │
+│                                                        │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │           Tool Orchestrator Engine (MCP)         │  │
+│  │       📧 Gmail  |  📅 Calendar  |  📁 Drive      │  │
+│  └──────────────────────────────────────────────────┘  │
+└────────────────────────────┬───────────────────────────┘
+                             │
+                      TLS 1.3 / gRPC
+                             │
+┌────────────────────────────▼───────────────────────────┐
+│                  aura-cloud Backend                    │
+│      (Go Server — GCP Cloud Run Container Proxy)       │
+└────────────────────────────┬───────────────────────────┘
+                             │
+┌────────────────────────────▼───────────────────────────┐
+│                   Google Gemini API                    │
+└────────────────────────────────────────────────────────┘
 ```
 
-## Components
+---
 
-| Component | Language | Description |
-|---|---|---|
-| `pam-google` | C | PAM authentication module — login with Google |
-| `aura-auth-helper` | Rust | OAuth 2.0 PKCE flow for first-boot sign-in |
-| `aura-token-refresh` | Rust | systemd service for automatic token refresh |
-| `aura-profile-sync` | Rust | Google profile sync (name, avatar, contacts) |
-| `gemini-daemon` | Rust | Core AI system service with D-Bus interface |
-| `aura-cli` | Rust | Command-line interface to Gemini |
-| `aura-cloud` | Go | Backend proxy holding Gemini API key |
-| `gnome-shell-extension` | TypeScript | Desktop Gemini panel + account switcher |
+## 🔴 Component Grid
 
-## Base Distribution
+The AuraOS ecosystem is partitioned into these highly optimized modules:
 
-- **Base:** Ubuntu 24.04 LTS (Noble Numbat)
-- **Desktop:** GNOME 46 (modified)
-- **Kernel:** Ubuntu HWE 6.8+
-- **Display:** Wayland-first (Mutter) + XWayland
-- **Init:** systemd 255+
-- **Security:** AppArmor, LUKS2 + TPM2
+| Module | Directory | Language | Description |
+|:---|:---|:---|:---|
+| **PAM Authenticator** | [`pam-google/`](file:///c:/Users/Nibir/AuraOs/pam-google) | `C` | Verifies Google credentials and manages PAM sessions. |
+| **PKCE Login Helper** | [`aura-auth-helper/`](file:///c:/Users/Nibir/AuraOs/aura-auth-helper) | `Rust` | Handles OAuth 2.0 PKCE authentication flow inside a GtkWindow. |
+| **Token Rotator** | [`aura-token-refresh/`](file:///c:/Users/Nibir/AuraOs/aura-token-refresh) | `Rust` | A systemd user timer that manages secure credential rotations. |
+| **Profile Sync** | [`aura-profile-sync/`](file:///c:/Users/Nibir/AuraOs/aura-profile-sync) | `Rust` | Syncs Google user data (display name, language, `.face` avatar). |
+| **Gemini Daemon** | [`gemini-daemon/`](file:///c:/Users/Nibir/AuraOs/gemini-daemon) | `Rust` | Orchestrates context, coordinates tool calls, and exposes a D-Bus API. |
+| **Aura Command Line** | [`aura-cli/`](file:///c:/Users/Nibir/AuraOs/aura-cli) | `Rust` | CLI query interface to interface with the system assistant. |
+| **Cloud Proxy Backend** | [`aura-cloud/`](file:///c:/Users/Nibir/AuraOs/aura-cloud) | `Go` | A stateless Cloud Run gRPC server that holds API keys & enforces quotas. |
+| **GNOME Integration** | [`gnome-shell-extension/`](file:///c:/Users/Nibir/AuraOs/gnome-shell-extension) | `TypeScript` | Adds visual slide-out drawer, quick settings switcher, and notifications. |
 
-## Building
+---
+
+## 🔵 Base Distribution Specifications
+
+AuraOS is built on top of a highly refined base image:
+*   **Operating System Base:** Ubuntu 26.04 LTS (*Resolute Raccoon*)
+*   **Desktop Shell:** GNOME 46 (customized schemas and overrides)
+*   **Kernel Branding:** Branded Aura Kernel (based on Ubuntu HWE 6.8+)
+*   **Display Compositor:** Wayland-first session (Mutter compositor)
+*   **Init Manager:** systemd 255+
+*   **Default Confinement:** AppArmor profiles for daemon isolation
+
+---
+
+## 🟢 Compilation & Build Guide
 
 ### Prerequisites
 
-- Ubuntu 24.04 or equivalent (for native builds)
-- Rust 1.75+ (via rustup)
-- Go 1.22+
-- GCC, CMake, libpam-dev, libsecret-1-dev, libcurl4-openssl-dev, libjson-c-dev
-- protobuf-compiler, protoc-gen-go, protoc-gen-go-grpc
-- Node.js 20+ (for GNOME Shell extension TypeScript compilation)
+To compile AuraOS locally, prepare the following dependencies in your development environment:
+*   **Rust Toolchain:** Rust 1.75+ (via rustup)
+*   **Go Environment:** Go 1.22+
+*   **Node.js Runtime:** Node.js 20+ (with npm)
+*   **Build Essentials:** GCC, CMake, `pkg-config`
+*   **System Libraries:** `libpam-dev`, `libsecret-1-dev`, `libcurl4-openssl-dev`, `libjson-c-dev`, `libdbus-1-dev`, `libssl-dev`, `libgtk-4-dev`, `libadwaita-1-dev`
+*   **Protobuf Compilers:** `protobuf-compiler`
 
-### Build All
+---
 
+### Step-by-Step Build Commands
+
+<details>
+<summary><b>🛠️ Compiling All Binaries</b></summary>
+
+Compile and assemble all target binaries into the `build/` workspace:
 ```bash
 make all
 ```
+</details>
 
-### Build Individual Components
+<details>
+<summary><b>📦 Compiling Individual Components</b></summary>
 
+You can build specific layers of the system independently:
 ```bash
-make pam-google          # PAM module
-make aura-auth-helper    # OAuth helper
-make aura-token-refresh  # Token refresh service
-make aura-profile-sync   # Profile sync service
-make gemini-daemon       # Gemini system daemon
-make aura-cli            # CLI tool
-make aura-cloud          # Backend service
-make gnome-extension     # GNOME Shell extension
+make pam-google          # Build PAM module
+make aura-auth-helper    # Build PKCE sign-in helper
+make aura-token-refresh  # Build background token refresher
+make aura-profile-sync   # Build account metadata synchronizer
+make gemini-daemon       # Build core Rust D-Bus assistant daemon
+make aura-cli            # Build CLI command terminal tool
+make aura-cloud          # Build Go Cloud Run backend proxy
+make gnome-extension     # Build GNOME shell panel extension
 ```
+</details>
 
-### Build Debian Packages
+<details>
+<summary><b>🗂️ Generating Debian Packages</b></summary>
 
+Package the binaries into installable `.deb` archives:
 ```bash
 make deb
 ```
+</details>
 
-### Build ISO
+<details>
+<summary><b>💿 Building the Bootable ISO Image</b></summary>
 
+Bootstrap the custom Ubuntu base image, overlay files, and construct a hybrid UEFI/BIOS bootable installer ISO:
 ```bash
 make iso
 ```
+</details>
 
-## Project Structure
+---
+
+## 🟡 Folder structure
 
 ```
 AuraOs/
-├── aura-auth-helper/      Rust — OAuth PKCE flow
-├── aura-cli/              Rust — CLI interface
-├── aura-cloud/            Go — Backend proxy
-├── aura-profile-sync/     Rust — Profile sync
-├── aura-token-refresh/    Rust — Token refresh
-├── gemini-daemon/         Rust — Core AI service
-├── gnome-shell-extension/ TypeScript — Desktop integration
-├── pam-google/            C — PAM module
-├── apparmor/              AppArmor profiles
-├── config/                Default configuration
-├── dbus/                  D-Bus interface definitions
-├── installer/             Calamares customization
-├── iso-build/             ISO build scripts
-├── packaging/             Debian packaging
-├── proto/                 Shared protobuf definitions
-└── systemd/               systemd unit files
+├── .github/workflows/      # Automated CI/CD test and deployment pipelines
+├── apparmor/               # Sandboxing configuration profiles
+├── aura-auth-helper/       # Rust OAuth 2.0 PKCE client application
+├── aura-cli/               # CLI terminal assistant program
+├── aura-cloud/             # Go gRPC Cloud Run backend gateway
+├── aura-installer/         # GTK4/Libadwaita system setup application
+├── aura-profile-sync/      # Background Google People API avatar synchronization
+├── aura-token-refresh/     # Systemd system credential rotation service
+├── branding/               # Brand artwork assets and SVG banners
+├── config/                 # Default desktop, pam, and terminal configurations
+├── dbus/                   # D-Bus interfaces and autostart registration rules
+├── gemini-daemon/          # Main async system intelligence agent
+├── gnome-shell-extension/  # GNOME Shell TypeScript notification panel integration
+├── iso-build/              # debootstrap packaging overlay and ISO builder scripts
+├── packaging/              # Debian structure rules for package compiler
+├── pam-google/             # Google PAM authentication logic in C
+├── proto/                  # Common Cloud protobuf service declarations
+└── systemd/                # Service timer and daemon unit files
 ```
 
-## License
+---
 
-GNU General Public License v3.0 — See [LICENSE](LICENSE)
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+<p align="center">
+  <sub>Developed by <b>AuraOS Contributors</b> • Licensed under <b>GNU GPL v3.0</b></sub>
+</p>

@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#08090c" />
+      <stop offset="50%" stop-color="#0f111a" />
+      <stop offset="100%" stop-color="#050608" />
+    </linearGradient>
+
+    <!-- Aura Center Glow -->
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#4285F4" stop-opacity="0.25" />
+      <stop offset="50%" stop-color="#ea4335" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Google Brand Color Gradients -->
+    <linearGradient id="googleBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#66a0ff" />
+      <stop offset="100%" stop-color="#4285F4" />
+    </linearGradient>
+    <linearGradient id="googleRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7669" />
+      <stop offset="100%" stop-color="#EA4335" />
+    </linearGradient>
+    <linearGradient id="googleYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd043" />
+      <stop offset="100%" stop-color="#FBBC05" />
+    </linearGradient>
+    <linearGradient id="googleGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5cdb7d" />
+      <stop offset="100%" stop-color="#34A853" />
+    </linearGradient>
+
+    <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#91b4ff" />
+      <stop offset="30%" stop-color="#a0c2ff" />
+      <stop offset="70%" stop-color="#ea9bf4" />
+      <stop offset="100%" stop-color="#ffa3b1" />
+    </linearGradient>
+
+    <!-- Blur Filters for Glassmorphism & Glows -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="30" />
+    </filter>
+
+    <filter id="sparkle" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <style>
+    /* Keyframe Animations */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes rotateOrbit1 {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes rotateOrbit2 {
+      0% { transform: rotate(180deg); }
+      100% { transform: rotate(-180deg); }
+    }
+
+    @keyframes rotateOrbit3 {
+      0% { transform: rotate(90deg); }
+      100% { transform: rotate(450deg); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 0.95; transform: scale(1.08); }
+    }
+
+    @keyframes geminiPulse {
+      0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 8px rgba(160,194,255,0.6)); }
+      50% { transform: scale(1.12) rotate(15deg); filter: drop-shadow(0 0 20px rgba(234,155,244,0.9)); }
+    }
+
+    @keyframes starTwinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* Animation Classes */
+    .animated-float {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .orbit-1 {
+      animation: rotateOrbit1 25s linear infinite;
+      transform-origin: 400px 140px;
+    }
+
+    .orbit-2 {
+      animation: rotateOrbit2 30s linear infinite;
+      transform-origin: 400px 140px;
+    }
+
+    .orbit-3 {
+      animation: rotateOrbit3 20s linear infinite;
+      transform-origin: 400px 140px;
+    }
+
+    .pulsing-glow {
+      animation: pulseGlow 8s ease-in-out infinite;
+      transform-origin: 400px 140px;
+    }
+
+    .gemini-spark {
+      animation: geminiPulse 4s ease-in-out infinite;
+      transform-origin: 400px 140px;
+    }
+
+    .bg-star {
+      animation: starTwinkle 3s ease-in-out infinite;
+    }
+    
+    .bg-star:nth-child(2n) {
+      animation-delay: 1s;
+    }
+    .bg-star:nth-child(3n) {
+      animation-delay: 2s;
+    }
+
+    /* Font Styles */
+    .title-text {
+      font-family: 'Outfit', 'Product Sans', 'Inter', -apple-system, sans-serif;
+      font-weight: 800;
+      font-size: 44px;
+      fill: url(#geminiGrad);
+      letter-spacing: 2px;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .subtitle-text {
+      font-family: 'Outfit', 'Product Sans', 'Inter', -apple-system, sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      fill: #a0c2ff;
+      letter-spacing: 6px;
+      opacity: 0.9;
+    }
+
+    .desc-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      fill: #7f8c8d;
+      letter-spacing: 1px;
+    }
+  </style>
+
+  <!-- Background Rect -->
+  <rect width="100%" height="100%" fill="url(#bgGrad)" />
+
+  <!-- Ambient Light/Glow Fields -->
+  <circle cx="280" cy="100" r="120" fill="#4285F4" opacity="0.12" filter="url(#softGlow)" />
+  <circle cx="520" cy="180" r="140" fill="#EA4335" opacity="0.08" filter="url(#softGlow)" />
+  <circle cx="400" cy="140" r="160" fill="url(#centerGlow)" class="pulsing-glow" />
+
+  <!-- Background Stars/Dots (Static & Twinkling) -->
+  <g fill="#ffffff">
+    <circle cx="80" cy="60" r="1" class="bg-star" />
+    <circle cx="700" cy="90" r="1.5" class="bg-star" />
+    <circle cx="150" cy="240" r="1.2" class="bg-star" />
+    <circle cx="640" cy="280" r="1" class="bg-star" />
+    <circle cx="300" cy="40" r="0.8" />
+    <circle cx="500" cy="50" r="1.2" class="bg-star" />
+    <circle cx="210" cy="120" r="1" />
+    <circle cx="590" cy="160" r="0.8" class="bg-star" />
+    <circle cx="120" cy="180" r="1.5" class="bg-star" />
+    <circle cx="720" cy="210" r="1" />
+  </g>
+
+  <!-- Main Animated Logo Section -->
+  <g class="animated-float">
+    <!-- Outer Google-colored Orbit Ring 1 (Blue & Yellow) -->
+    <ellipse cx="400" cy="140" rx="90" ry="24" fill="none" stroke="url(#googleBlue)" stroke-width="1.5" stroke-dasharray="140 30 10 30" class="orbit-1" opacity="0.65" filter="url(#glow)" />
+    
+    <!-- Outer Google-colored Orbit Ring 2 (Red & Green) -->
+    <ellipse cx="400" cy="140" rx="110" ry="32" fill="none" stroke="url(#googleRed)" stroke-width="1.2" stroke-dasharray="80 40 20 40" class="orbit-2" opacity="0.5" filter="url(#glow)" />
+    
+    <!-- Outer Google-colored Orbit Ring 3 (Yellow) -->
+    <ellipse cx="400" cy="140" rx="75" ry="16" fill="none" stroke="url(#googleYellow)" stroke-width="1" stroke-dasharray="200 60" class="orbit-3" opacity="0.7" filter="url(#glow)" />
+
+    <!-- Center Core Shield / Glass Circle -->
+    <circle cx="400" cy="140" r="42" fill="#0c0e15" fill-opacity="0.75" stroke="rgba(255, 255, 255, 0.15)" stroke-width="1.5" />
+    <circle cx="400" cy="140" r="41" fill="none" stroke="url(#googleGreen)" stroke-width="1" opacity="0.4" />
+
+    <!-- Google Gemini Spark Star (4-Pointed Star) -->
+    <!-- Path formula for 4-pointed star: M cx,cy-r Q cx,cy cx+r,cy Q cx,cy cx,cy+r Q cx,cy cx-r,cy Q cx,cy cx,cy-r -->
+    <path d="M 400,116 Q 400,140 424,140 Q 400,140 400,164 Q 400,140 376,140 Q 400,140 400,116 Z" fill="url(#geminiGrad)" class="gemini-spark" filter="url(#sparkle)" />
+    
+    <!-- Inner bright center core -->
+    <circle cx="400" cy="140" r="4" fill="#ffffff" filter="url(#sparkle)" />
+  </g>
+
+  <!-- Branded Text Section -->
+  <g text-anchor="middle">
+    <!-- Title: AuraOS -->
+    <text x="400" y="248" class="title-text">AuraOS</text>
+
+    <!-- Subtitle: GOOGLE-INTEGRATED DESKTOP -->
+    <text x="402" y="278" class="subtitle-text">GOOGLE-INTEGRATED OS</text>
+
+    <!-- Short Description / Tagline -->
+    <text x="400" y="306" class="desc-text">Next-Generation Linux Distribution Powered by Gemini AI</text>
+  </g>
+</svg>

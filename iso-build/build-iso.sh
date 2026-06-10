@@ -140,9 +140,9 @@ rm "${ROOT_DIR}/tmp/install-pkgs.sh"
 # 7. Configure GNOME Shell extension and theme defaults (Dark Mode & Blue Accent & Wallpaper)
 echo "Setting GNOME default overrides..."
 
-# Copy custom wallpaper from host installer directory to target chroot
+# Copy custom wallpaper from host branding directory to target chroot
 mkdir -p "${ROOT_DIR}/usr/share/backgrounds/auraos"
-cp ../installer/branding/auraos/wallpaper.jpg "${ROOT_DIR}/usr/share/backgrounds/auraos/wallpaper.jpg"
+cp ../branding/wallpaper.png "${ROOT_DIR}/usr/share/backgrounds/auraos/wallpaper.png"
 
 mkdir -p "${ROOT_DIR}/usr/share/glib-2.0/schemas"
 cat <<EOF > "${ROOT_DIR}/usr/share/glib-2.0/schemas/99-auraos-defaults.gschema.override"
@@ -155,13 +155,38 @@ color-scheme='prefer-dark'
 accent-color='blue'
 
 [org.gnome.desktop.background]
-picture-uri='file:///usr/share/backgrounds/auraos/wallpaper.jpg'
-picture-uri-dark='file:///usr/share/backgrounds/auraos/wallpaper.jpg'
+picture-uri='file:///usr/share/backgrounds/auraos/wallpaper.png'
+picture-uri-dark='file:///usr/share/backgrounds/auraos/wallpaper.png'
 picture-options='zoom'
 
 [org.gnome.desktop.screensaver]
-picture-uri='file:///usr/share/backgrounds/auraos/wallpaper.jpg'
+picture-uri='file:///usr/share/backgrounds/auraos/wallpaper.png'
 EOF
+
+# Create custom Google-themed terminal profile script
+mkdir -p "${ROOT_DIR}/etc/profile.d"
+cat <<'EOF' > "${ROOT_DIR}/etc/profile.d/auraos-google-theme.sh"
+# AuraOS Google-themed Terminal Customization
+if [ -n "$PS1" ]; then
+    # Custom Google-colored AuraOS prompt
+    # Blue: \e[1;34m, Red: \e[1;31m, Yellow: \e[1;33m, Green: \e[1;32m
+    # AuraOS: A(Blue) u(Red) r(Yellow) a(Green) O(Blue) S(Red)
+    PROMPT_PREFIX="\[\e[0m\][\[\e[1;34m\]A\[\e[1;31m\]u\[\e[1;33m\]r\[\e[1;32m\]a\[\e[1;34m\]O\[\e[1;31m\]S\[\e[0m\]]"
+    
+    # Check if user is root
+    if [ "$EUID" -eq 0 ]; then
+        PS1="${PROMPT_PREFIX} \[\e[1;31m\]\u@\h\[\e[0m\]: \[\e[1;34m\]\w\[\e[0m\]# "
+    else
+        PS1="${PROMPT_PREFIX} \[\e[1;32m\]\u@\h\[\e[0m\]: \[\e[1;34m\]\w\[\e[0m\]$ "
+    fi
+fi
+
+# Run fastfetch on interactive shell startup
+if [ -x /usr/bin/fastfetch ] && [ -n "$PS1" ]; then
+    fastfetch
+fi
+EOF
+chmod +x "${ROOT_DIR}/etc/profile.d/auraos-google-theme.sh"
 
 # Compile GNOME settings schemas inside chroot
 chroot "${ROOT_DIR}" glib-compile-schemas /usr/share/glib-2.0/schemas
