@@ -1,0 +1,61 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="com.auraos.GeminiAssistant1">
+    <!-- Synchronous single-turn query -->
+    <method name="Query">
+      <arg direction="in"  name="prompt"     type="s"/>
+      <arg direction="in"  name="options"    type="a{sv}"/>
+      <arg direction="out" name="response"   type="s"/>
+      <arg direction="out" name="task_id"    type="s"/>
+    </method>
+
+    <!-- Async agentic task (long-running, uses tools) -->
+    <method name="DispatchTask">
+      <arg direction="in"  name="task_description"  type="s"/>
+      <arg direction="in"  name="context"            type="s"/>
+      <arg direction="out" name="task_id"            type="s"/>
+    </method>
+
+    <!-- Cancel active task -->
+    <method name="CancelTask">
+      <arg direction="in"  name="task_id"    type="s"/>
+      <arg direction="out" name="success"    type="b"/>
+    </method>
+
+    <!-- Get status of a dispatched task -->
+    <method name="GetTaskStatus">
+      <arg direction="in"  name="task_id"    type="s"/>
+      <arg direction="out" name="status"     type="s"/>
+      <arg direction="out" name="result"     type="s"/>
+    </method>
+
+    <!-- Get list of previous chat turns -->
+    <method name="GetConversationHistory">
+      <arg direction="out" name="history"    type="s"/>
+    </method>
+
+    <!-- Clear sqlite and session conversation history -->
+    <method name="ClearConversation">
+    </method>
+
+    <!-- Signals -->
+    <signal name="StreamChunk">
+      <arg name="task_id"   type="s"/>
+      <arg name="chunk"     type="s"/>
+      <arg name="is_final"  type="b"/>
+    </signal>
+
+    <signal name="TaskCompleted">
+      <arg name="task_id"   type="s"/>
+      <arg name="result"    type="s"/>
+      <arg name="tools_used" type="as"/>
+    </signal>
+
+    <signal name="ProactiveInsight">
+      <arg name="insight_type"  type="s"/>
+      <arg name="content"       type="s"/>
+      <arg name="actions"       type="s"/>
+    </signal>
+  </interface>
+</node>

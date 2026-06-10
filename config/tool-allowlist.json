@@ -1,0 +1,17 @@
+{
+  "allowlist": [
+    "gmail_search",
+    "gmail_send",
+    "gmail_draft",
+    "calendar_query",
+    "calendar_create",
+    "calendar_delete",
+    "drive_search",
+    "drive_read",
+    "tasks_query",
+    "tasks_complete",
+    "contacts_search",
+    "local_file_read",
+    "system_notification"
+  ]
+}

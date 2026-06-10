@@ -1,0 +1,29 @@
+# Calamares Branding Descriptor for AuraOS
+---
+componentName:  auraos
+
+strings:
+    productName:         AuraOS
+    shortProductName:    AuraOS
+    version:             24.04 (Noble)
+    shortVersion:        24.04
+    versionedName:       AuraOS 24.04 (Noble)
+    shortVersionedName:  AuraOS 24.04
+    bootloaderEntryName: AuraOS
+    productUrl:          https://github.com/auraos/auraos
+    supportUrl:          https://github.com/auraos/auraos/issues
+    knownIssuesUrl:      https://github.com/auraos/auraos/issues
+    releaseNotesUrl:     https://github.com/auraos/auraos
+
+images:
+    productLogo:         "logo.png"
+    productIcon:         "logo.png"
+    productWelcome:      "welcome.png"
+
+slideshow:               "show.qml"
+
+style:
+   SidebarBackground:    "#1e1f22"
+   SidebarText:          "#e3e3e3"
+   SidebarTextCurrent:   "#3867d6"
+   SidebarBackgroundCurrent: "#2f3542"

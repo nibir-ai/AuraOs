@@ -1,0 +1,27 @@
+# AuraOS Distro-Level Configuration File
+# Placed at /etc/auraos/config.toml
+
+[aura-cloud]
+# The backend proxy service holding the Gemini API key
+url = "https://api.auraos.io:443"
+
+[gemini]
+# Default model to use
+default_model = "gemini-2.0-flash"
+
+# Inactive session timeout in minutes before conversation is cleared
+session_timeout = 30
+
+[auth]
+# Google Client ID (publicly packaged)
+client_id = "AURAOS_CLIENT_ID_PLACEHOLDER.apps.googleusercontent.com"
+
+# Directory containing the Google profile user mappings
+account_db = "/var/lib/auraos/accounts"
+
+[security]
+# Enable strict AppArmor confinement auditing
+audit_confinement = true
+
+# Require desktop confirmation notifications for destructive actions
+confirm_destructive_actions = true

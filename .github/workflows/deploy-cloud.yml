@@ -1,0 +1,63 @@
+name: Deploy aura-cloud Backend
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'aura-cloud/**'
+      - 'proto/**'
+      - '.github/workflows/deploy-cloud.yml'
+
+env:
+  PROJECT_ID: 'auraos-prod'
+  REGION: 'us-central1'
+  SERVICE_NAME: 'aura-cloud'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 1. Authenticate with Google Cloud
+    # Authenticates using Workflow Identity Federation (recommended for production)
+    - name: Google Auth
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: 'projects/1234567890/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+        service_account: 'deploy-aura-cloud@auraos-prod.iam.gserviceaccount.com'
+
+    # 2. Setup Google Cloud SDK CLI
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    # 3. Configure Docker authentication for Artifact Registry
+    - name: Authorize Docker
+      run: |
+        gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+    # 4. Build and Push the container image to GCP Artifact Registry
+    - name: Build and Push Container
+      run: |
+        IMAGE_TAG="us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/auraos-registry/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+        cd aura-cloud
+        docker build -t "${IMAGE_TAG}" .
+        docker push "${IMAGE_TAG}"
+        echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+
+    # 5. Deploy to Google Cloud Run
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy ${{ env.SERVICE_NAME }} \
+          --image ${{ env.IMAGE_TAG }} \
+          --region ${{ env.REGION }} \
+          --platform managed \
+          --allow-unauthenticated \
+          --port 50051 \
+          --use-http2 \
+          --set-secrets="GEMINI_API_KEY=gemini-api-key:latest,RATE_LIMIT_REDIS_URL=redis-url:latest" \
+          --set-env-vars="FREE_TIER_LIMIT=50" \
+          --service-account="aura-cloud-sa@auraos-prod.iam.gserviceaccount.com"

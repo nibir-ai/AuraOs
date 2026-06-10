@@ -1,0 +1,5 @@
+gemini-daemon (1.0.0-1) unstable; urgency=medium
+
+  * Initial release of gemini-daemon AI assistant package for AuraOS.
+
+ -- AuraOS Contributors <support@auraos.org>  Wed, 10 Jun 2026 12:10:00 +0000

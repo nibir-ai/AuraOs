@@ -1,0 +1,17 @@
+# PAM configuration for console (TTY) logins with Google OAuth integration
+# Placed at /etc/pam.d/aura-login
+
+auth    requisite     pam_nologin.so
+auth    required      pam_google.so account_db=/var/lib/auraos/accounts
+auth    required      pam_unix.so nullok_secure try_first_pass
+auth    optional      pam_permit.so
+
+account required      pam_unix.so
+account required      pam_permit.so
+
+password required     pam_unix.so obscure sha512
+
+session required      pam_limits.so
+session required      pam_unix.so
+session required      pam_google.so refresh_tokens
+session required      pam_systemd.so

@@ -1,0 +1,43 @@
+#include <tunables/global>
+
+profile gemini-daemon /usr/libexec/gemini-daemon {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+  #include <abstractions/dbus-session-strict>
+
+  # Allow TCP network access for gRPC connection to aura-cloud backend
+  network inet stream,
+  network inet6 stream,
+
+  # System config access
+  /etc/auraos/config.toml r,
+  /etc/auraos/tool-allowlist.json r,
+
+  # Per-user database operations
+  /var/lib/auraos/gemini-conversations.db rwk,
+  /var/lib/auraos/gemini-conversations.db-shm rwk,
+  /var/lib/auraos/gemini-conversations.db-wal rwk,
+
+  # Restrict local file reading to owner's home directory (read-only)
+  owner @{HOME}/** r,
+
+  # Desktop notification execution
+  /usr/bin/notify-send ix,
+
+  # Write permission to log lifecycle changes
+  /var/log/auraos/token-lifecycle.log w,
+
+  # Allow DBus operations for com.auraos.GeminiAssistant
+  dbus (send, receive)
+       bus=session
+       interface=org.freedesktop.DBus
+       path=/org/freedesktop/DBus,
+  dbus (bind)
+       bus=session
+       name=com.auraos.GeminiAssistant,
+  dbus (send, receive)
+       bus=session
+       path=/com/auraos/GeminiAssistant
+       interface=com.auraos.GeminiAssistant1,
+}

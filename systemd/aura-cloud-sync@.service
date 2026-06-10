@@ -1,0 +1,21 @@
+[Unit]
+Description=AuraOS Google Cloud Sync Service (Drive FUSE mount) for %i
+Documentation=https://github.com/auraos/auraos
+After=network-online.target gnome-keyring-daemon.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%i
+# Ensure Drive mount point exists
+ExecStartPre=/bin/mkdir -p %h/Drive
+# Mount Google Drive via FUSE (google-drive-ocamlfuse)
+ExecStart=/usr/bin/google-drive-ocamlfuse -label %i %h/Drive
+# Unmount on service stop
+ExecStop=/bin/fusermount -u %h/Drive
+Restart=on-failure
+RestartSec=10
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%U/bus
+
+[Install]
+WantedBy=default.target

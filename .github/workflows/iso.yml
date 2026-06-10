@@ -1,0 +1,76 @@
+name: Build Bootable ISO
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          cmake \
+          libpam0g-dev \
+          libcurl4-openssl-dev \
+          libsecret-1-dev \
+          libjson-c-dev \
+          libdbus-1-dev \
+          libssl-dev \
+          protobuf-compiler \
+          pkg-config \
+          debootstrap \
+          squashfs-tools \
+          xorriso \
+          grub-pc-bin \
+          grub-efi-amd64-bin \
+          mtools \
+          dosfstools \
+          syslinux \
+          isolinux \
+          dpkg-dev \
+          debhelper
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Node.js build dependencies
+      run: |
+        cd gnome-shell-extension
+        npm install
+
+    - name: Build Debian packages
+      run: |
+        # Creates output build directory
+        mkdir -p build
+        make deb
+
+    - name: Build bootable hybrid ISO
+      run: |
+        cd iso-build
+        sudo bash build-iso.sh
+
+    - name: Upload ISO Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: auraos-desktop-iso
+        path: auraos-*.iso
+        if-no-files-found: error
+        retention-days: 5

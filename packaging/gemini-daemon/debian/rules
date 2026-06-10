@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+# Rules for building the gemini-daemon package using the main Makefile
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	# No configuration step needed
+
+override_dh_auto_build:
+	# Build all components using the top-level Makefile
+	make -C ../.. all
+
+override_dh_auto_install:
+	# Install files into debian packaging directory using top-level Makefile
+	make -C ../.. install DESTDIR=$(CURDIR)/debian/gemini-daemon PREFIX=/usr
+	# Also install GNOME Extension files explicitly to shell extensions folder
+	mkdir -p $(CURDIR)/debian/gemini-daemon/usr/share/gnome-shell/extensions/gemini-assistant@auraos.org
+	cp -r ../../gnome-shell-extension/build/* $(CURDIR)/debian/gemini-daemon/usr/share/gnome-shell/extensions/gemini-assistant@auraos.org/
+	cp ../../gnome-shell-extension/metadata.json $(CURDIR)/debian/gemini-daemon/usr/share/gnome-shell/extensions/gemini-assistant@auraos.org/
+	cp ../../gnome-shell-extension/stylesheet.css $(CURDIR)/debian/gemini-daemon/usr/share/gnome-shell/extensions/gemini-assistant@auraos.org/
+
+override_dh_auto_clean:
+	make -C ../.. clean

@@ -1,0 +1,50 @@
+# Rust build artifacts
+target/
+**/target/
+**/*.rs.bk
+
+# Go build and dependency artifacts
+/build/
+aura-cloud/aura-cloud
+
+# C / CMake build artifacts
+pam-google/build/
+**/CMakeCache.txt
+**/CMakeFiles/
+**/Makefile2
+**/cmake_install.cmake
+**/progress.marks
+**/*.so
+**/*.o
+**/*.a
+
+# Node / GNOME Shell extension build artifacts
+node_modules/
+gnome-shell-extension/build/
+gnome-shell-extension/node_modules/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System & IDE Specific
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/ipch/
+.vscode/launch.json
+.vscode/tasks.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# Local databases and logs
+*.db
+*.db-shm
+*.db-wal
+*.log
+/var/
+EOF

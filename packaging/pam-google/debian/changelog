@@ -1,0 +1,5 @@
+pam-google (1.0.0-1) unstable; urgency=medium
+
+  * Initial release of pam-google authentication module for AuraOS.
+
+ -- AuraOS Contributors <support@auraos.org>  Wed, 10 Jun 2026 12:00:00 +0000

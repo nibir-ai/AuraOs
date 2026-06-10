@@ -1,0 +1,10 @@
+[Unit]
+Description=AuraOS Google Profile Sync Timer for %i
+Documentation=https://github.com/auraos/auraos
+
+[Timer]
+OnCalendar=0/6:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

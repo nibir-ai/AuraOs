@@ -1,0 +1,10 @@
+[Unit]
+Description=AuraOS Google Token Refresh Timer for %i
+Documentation=https://github.com/auraos/auraos
+
+[Timer]
+OnCalendar=*:0/45
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,132 @@
+/* Gemini Assistant GNOME Shell Extension Stylesheet */
+
+/* Panel Indicator Button */
+.gemini-panel-button {
+  spacing: 4px;
+}
+
+.gemini-panel-icon {
+  icon-size: 16px;
+}
+
+/* Chat Panel Container */
+.gemini-chat-panel {
+  background-color: rgba(30, 31, 34, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  width: 380px;
+  height: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Chat Title/Header */
+.gemini-chat-header {
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.gemini-chat-title {
+  font-weight: bold;
+  font-size: 14pt;
+  color: #e3e3e3;
+}
+
+/* Chat Scrollable Area */
+.gemini-chat-scroll {
+  margin-bottom: 12px;
+}
+
+.gemini-chat-history {
+  spacing: 12px;
+}
+
+/* Message Bubbles */
+.gemini-message {
+  border-radius: 12px;
+  padding: 10px 14px;
+  max-width: 280px;
+  font-size: 10.5pt;
+  line-height: 1.4;
+}
+
+/* User Message Bubble */
+.gemini-message-user {
+  background-color: #3867d6;
+  color: #ffffff;
+  margin-left: 40px;
+  border-bottom-right-radius: 2px;
+}
+
+/* Assistant/Model Message Bubble */
+.gemini-message-assistant {
+  background-color: #2f3542;
+  color: #e3e3e3;
+  margin-right: 40px;
+  border-bottom-left-radius: 2px;
+}
+
+/* Chat Input Area */
+.gemini-input-container {
+  spacing: 8px;
+}
+
+.gemini-chat-entry {
+  background-color: #2f3542;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: #ffffff;
+  padding: 8px 16px;
+  font-size: 11pt;
+}
+
+.gemini-chat-entry:focus {
+  border: 1px solid #3867d6;
+}
+
+.gemini-send-button {
+  background-color: #3867d6;
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-weight: bold;
+}
+
+.gemini-send-button:hover {
+  background-color: #4b7bec;
+}
+
+.gemini-clear-button {
+  background-color: transparent;
+  color: #a5b1c2;
+  border-radius: 20px;
+  padding: 6px;
+}
+
+.gemini-clear-button:hover {
+  color: #fc5c65;
+}
+
+/* Account Switcher Indicator */
+.aura-account-switcher-item {
+  spacing: 8px;
+  padding: 6px 12px;
+}
+
+.aura-account-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background-size: cover;
+}
+
+.aura-account-name {
+  font-weight: bold;
+  color: #e3e3e3;
+}
+
+.aura-account-email {
+  font-size: 9pt;
+  color: #a5b1c2;
+}

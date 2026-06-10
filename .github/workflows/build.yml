@@ -1,0 +1,71 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          cmake \
+          libpam0g-dev \
+          libcurl4-openssl-dev \
+          libsecret-1-dev \
+          libjson-c-dev \
+          libdbus-1-dev \
+          libssl-dev \
+          protobuf-compiler \
+          pkg-config
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Node.js build dependencies
+      run: |
+        cd gnome-shell-extension
+        npm install
+
+    - name: Build all components
+      run: |
+        make all
+
+    - name: Run Rust unit tests
+      run: |
+        cd aura-auth-helper && cargo test
+        cd ../aura-token-refresh && cargo test
+        cd ../aura-profile-sync && cargo test
+        cd ../gemini-daemon && cargo test
+        cd ../aura-cli && cargo test
+
+    - name: Run Go unit tests
+      run: |
+        cd aura-cloud
+        # Compiles the protobufs in order to test Go code
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.33.0
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
+        mkdir -p proto/auracloudv1
+        protoc --go_out=. --go-grpc_out=. proto/aura_cloud.proto
+        go test ./...

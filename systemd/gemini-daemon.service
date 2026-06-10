@@ -1,0 +1,15 @@
+[Unit]
+Description=AuraOS Gemini Personal Assistant Daemon
+Documentation=https://github.com/auraos/auraos
+After=gnome-keyring-daemon.service dbus.socket
+Requires=dbus.socket
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/gemini-daemon
+Restart=on-failure
+RestartSec=5
+Environment=RUST_LOG=info
+
+[Install]
+WantedBy=default.target

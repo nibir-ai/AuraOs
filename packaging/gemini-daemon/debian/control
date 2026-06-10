@@ -1,0 +1,13 @@
+Source: gemini-daemon
+Section: misc
+Priority: optional
+Maintainer: AuraOS Contributors <support@auraos.org>
+Build-Depends: debhelper-compat (= 13), cargo, rustc, pkg-config, libssl-dev, libdbus-1-dev, nodejs, npm
+Standards-Version: 4.6.2
+
+Package: gemini-daemon
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, dbus, systemd, libnotify-bin, sqlite3, google-drive-ocamlfuse, evolution-data-server, fuse3
+Description: Core AuraOS Gemini AI integration suite
+ Provides the Gemini assistant daemon, CLI interface, GNOME shell panel integration,
+ background sync services (token refresh, profile, contacts), D-Bus API, and AppArmor profiles.

@@ -1,0 +1,6 @@
+# Calamares module descriptor for AuraOS Google Authentication
+---
+type:       "job"
+name:       "aura-google-auth"
+interface:  "python"
+script:     "main.py"

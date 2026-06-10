@@ -1,0 +1,17 @@
+[Unit]
+Description=AuraOS Out-of-Box Experience Setup Assistant
+Documentation=https://github.com/auraos/auraos
+After=display-manager.service network-online.target
+Wants=network-online.target
+# Runs only if no Google accounts have been registered on the system yet
+ConditionDirectoryNotEmpty=!/var/lib/auraos/accounts
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/auraos/aura-auth-helper
+Restart=on-failure
+RestartSec=10
+Environment=RUST_LOG=info
+
+[Install]
+WantedBy=graphical.target

@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+# Rules for building the aura-auth-helper package using cargo
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	# No configure step
+
+override_dh_auto_build:
+	cargo build --release --manifest-path=../../aura-auth-helper/Cargo.toml
+
+override_dh_auto_test:
+	# Skip test execution during package build
+
+override_dh_auto_clean:
+	cargo clean --manifest-path=../../aura-auth-helper/Cargo.toml

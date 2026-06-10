@@ -1,0 +1,12 @@
+Source: pam-google
+Section: admin
+Priority: optional
+Maintainer: AuraOS Contributors <support@auraos.org>
+Build-Depends: debhelper-compat (= 13), cmake, libpam0g-dev, libcurl4-openssl-dev, libsecret-1-dev, libjson-c-dev
+Standards-Version: 4.6.2
+
+Package: pam-google
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libpam0g, libcurl4, libsecret-1-0, libjson-c5
+Description: PAM module for Google OAuth authentication
+ Provides login validation and token caching for AuraOS using Google accounts.

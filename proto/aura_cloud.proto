@@ -1,0 +1,163 @@
+// AuraOS Cloud Service — gRPC Protocol Definition
+// This defines the interface between gemini-daemon (client) and aura-cloud (server).
+// The aura-cloud backend holds the Gemini API key and proxies requests.
+
+syntax = "proto3";
+
+package aura.cloud.v1;
+
+option go_package = "github.com/auraos/aura-cloud/proto/auracloudv1";
+
+// GeminiProxy is the primary service. gemini-daemon connects to this
+// to send user queries to Gemini without needing a local API key.
+service GeminiProxy {
+  // StreamQuery sends a user message and streams back Gemini's response chunks.
+  // The server injects the system instruction and Gemini API key server-side.
+  rpc StreamQuery(QueryRequest) returns (stream QueryChunk);
+
+  // ValidateAccount checks if a Google access token is valid and the user
+  // is registered/allowed to use AuraOS services.
+  rpc ValidateAccount(ValidateRequest) returns (ValidateResponse);
+}
+
+// QueryRequest is sent by gemini-daemon for each user interaction.
+message QueryRequest {
+  // The user's Google OAuth access token, used to authenticate the request.
+  // aura-cloud validates this against Google's tokeninfo endpoint.
+  string google_access_token = 1;
+
+  // Unique conversation ID for multi-turn context.
+  string conversation_id = 2;
+
+  // Full conversation history (previous turns) for context.
+  repeated Message history = 3;
+
+  // The current user message/query.
+  string user_message = 4;
+
+  // Tool definitions available for this query (Gemini function calling schema).
+  repeated ToolDefinition tools = 5;
+
+  // System context metadata (no raw user data — only OS/env metadata).
+  SystemContext system_context = 6;
+}
+
+// Message represents a single turn in the conversation.
+message Message {
+  // Role: "user", "model", or "tool"
+  string role = 1;
+
+  // Text content of the message.
+  string content = 2;
+
+  // If role is "model" and this turn included a tool call:
+  ToolCall tool_call = 3;
+
+  // If role is "tool", this is the tool's response:
+  ToolResponse tool_response = 4;
+}
+
+// ToolDefinition describes a tool available for Gemini function calling.
+message ToolDefinition {
+  // Tool name (e.g., "gmail_search", "calendar_query")
+  string name = 1;
+
+  // Human-readable description of what the tool does.
+  string description = 2;
+
+  // JSON Schema defining the tool's input parameters.
+  string input_schema_json = 3;
+}
+
+// ToolCall represents Gemini requesting a tool invocation.
+message ToolCall {
+  // Name of the tool to call.
+  string tool_name = 1;
+
+  // JSON-encoded arguments for the tool.
+  string arguments_json = 2;
+
+  // Unique ID for this specific tool call (for matching responses).
+  string call_id = 3;
+}
+
+// ToolResponse is the result of executing a tool call locally.
+message ToolResponse {
+  // The call_id this response corresponds to.
+  string call_id = 1;
+
+  // JSON-encoded result from the tool execution.
+  string result_json = 2;
+
+  // Whether the tool execution succeeded.
+  bool success = 3;
+
+  // Error message if success is false.
+  string error = 4;
+}
+
+// SystemContext provides OS-level metadata to Gemini for contextual awareness.
+// This NEVER contains raw user data — only environment metadata.
+message SystemContext {
+  // AuraOS distribution version (e.g., "1.0.0-alpha")
+  string distro_version = 1;
+
+  // Currently focused application (e.g., "org.gnome.Nautilus")
+  string active_app = 2;
+
+  // User's locale (e.g., "en_US.UTF-8")
+  string locale = 3;
+
+  // User's timezone (e.g., "America/New_York")
+  string timezone = 4;
+
+  // Current date and time in ISO 8601 format
+  string current_datetime = 5;
+}
+
+// QueryChunk is a streamed response chunk from Gemini.
+message QueryChunk {
+  // Incremental text from Gemini's response.
+  string text_delta = 1;
+
+  // If Gemini is requesting a tool invocation (function call).
+  ToolCall tool_call = 2;
+
+  // True if this is the final chunk in the stream.
+  bool is_final = 3;
+
+  // Token usage metrics (populated on final chunk only).
+  UsageMetrics usage = 4;
+}
+
+// UsageMetrics reports token consumption for billing/quota tracking.
+message UsageMetrics {
+  int32 input_tokens = 1;
+  int32 output_tokens = 2;
+  int32 total_tokens = 3;
+  string model_used = 4;
+}
+
+// ValidateRequest checks if a user's Google token is valid.
+message ValidateRequest {
+  string google_access_token = 1;
+}
+
+// ValidateResponse returns validation result.
+message ValidateResponse {
+  bool valid = 1;
+  string google_sub = 2;       // Google user ID (sub claim)
+  string email = 3;
+  string display_name = 4;
+  string error_message = 5;
+
+  // Tier information for the user
+  UserTier tier = 6;
+}
+
+// UserTier represents the user's subscription level.
+enum UserTier {
+  USER_TIER_UNSPECIFIED = 0;
+  USER_TIER_FREE = 1;         // 50 queries/day, gemini-flash only
+  USER_TIER_PREMIUM = 2;      // Unlimited, gemini-pro available
+}

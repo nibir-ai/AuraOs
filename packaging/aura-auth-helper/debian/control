@@ -1,0 +1,12 @@
+Source: aura-auth-helper
+Section: utils
+Priority: optional
+Maintainer: AuraOS Contributors <support@auraos.org>
+Build-Depends: debhelper-compat (= 13), cargo, rustc, pkg-config, libssl-dev, libdbus-1-dev
+Standards-Version: 4.6.2
+
+Package: aura-auth-helper
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, gnome-keyring, libsecret-1-0, keyutils, python3-bcrypt
+Description: AuraOS Google Sign-In helper
+ Handles first-boot Google OAuth login, user creation, and token storage in GNOME Keyring.

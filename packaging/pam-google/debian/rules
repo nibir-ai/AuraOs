@@ -1,0 +1,5 @@
+#!/usr/bin/make -f
+# Rules for building the pam-google package
+
+%:
+	dh $@ --buildsystem=cmake

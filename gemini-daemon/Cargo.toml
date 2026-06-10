@@ -1,0 +1,60 @@
+[package]
+name = "gemini-daemon"
+version = "0.1.0"
+edition = "2021"
+description = "AuraOS Gemini Personal Assistant system daemon"
+license = "GPL-3.0-or-later"
+authors = ["AuraOS Contributors"]
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# D-Bus integration (native async Rust, no C wrapper)
+zbus = { version = "4", features = ["tokio"] }
+zvariant = "4"
+
+# HTTP client for Google API tool calls
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "stream"], default-features = false }
+
+# gRPC client for aura-cloud
+tonic = "0.12"
+prost = "0.13"
+
+# JSON
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# SQLite for conversation persistence
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+# GNOME Keyring / secret-service
+secret-service = "4"
+
+# UUID generation for task/conversation IDs
+uuid = { version = "1", features = ["v4"] }
+
+# URL encoding
+urlencoding = "2"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+anyhow = "1"
+thiserror = "2"
+
+# Async trait support
+async-trait = "0.1"
+
+# Time/scheduling for proactive tasks
+chrono = "0.4"
+cron = "0.13"
+
+# Configuration
+toml = "0.8"
+config = "0.14"
+
+[build-dependencies]
+tonic-build = "0.12"

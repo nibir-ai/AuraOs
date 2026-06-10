@@ -1,0 +1,10 @@
+{
+  "uuid": "gemini-assistant@auraos.org",
+  "name": "Gemini Assistant Indicator",
+  "description": "Integrates the Gemini AI assistant directly into the GNOME Shell top panel and provides a conversational sidebar.",
+  "shell-version": [
+    "45",
+    "46"
+  ],
+  "url": "https://github.com/auraos/auraos"
+}

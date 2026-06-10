@@ -1,0 +1,37 @@
+#include <tunables/global>
+
+profile aura-auth-helper /usr/lib/auraos/aura-auth-helper {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+  #include <abstractions/dbus-session-strict>
+
+  # Allow network communication (OAuth token exchange with Google)
+  network inet stream,
+  network inet6 stream,
+
+  # Allow binding to high ports on localhost for PKCE loopback server
+  /etc/login.defs r,
+  /etc/passwd r,
+  /etc/group r,
+  
+  # Allow writing account definitions
+  /var/lib/auraos/accounts/ rw,
+  /var/lib/auraos/accounts/*.json rwk,
+  /var/lib/auraos/accounts/*.json.tmp rwk,
+
+  # Execute useradd/getent for user creation
+  /usr/sbin/useradd ix,
+  /usr/bin/getent ix,
+  /usr/bin/python3 ix,
+  /usr/bin/id ix,
+
+  # Read-only configuration files
+  /etc/auraos/config.toml r,
+
+  # GNOME Keyring access via DBus session bus
+  dbus (send, receive)
+       bus=session
+       interface=org.freedesktop.Secret.Service
+       path=/org/freedesktop/secrets,
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=AuraOS Google Profile Sync Service for %i
+Documentation=https://github.com/auraos/auraos
+After=network-online.target gnome-keyring-daemon.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=%i
+ExecStart=/usr/lib/auraos/aura-profile-sync
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%U/bus
+Environment=RUST_LOG=info
+StandardOutput=journal
+StandardError=journal
