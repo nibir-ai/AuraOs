@@ -26,6 +26,8 @@ jobs:
           libssl-dev \
           protobuf-compiler \
           pkg-config \
+          libgtk-4-dev \
+          libadwaita-1-dev \
           debootstrap \
           squashfs-tools \
           xorriso \

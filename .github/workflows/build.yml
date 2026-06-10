@@ -26,7 +26,9 @@ jobs:
           libdbus-1-dev \
           libssl-dev \
           protobuf-compiler \
-          pkg-config
+          pkg-config \
+          libgtk-4-dev \
+          libadwaita-1-dev
 
     - name: Set up Go
       uses: actions/setup-go@v5
